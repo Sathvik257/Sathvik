@@ -391,39 +391,60 @@ window.addEventListener('DOMContentLoaded', () => {
   // List of specific repos to display (using exact names from GitHub)
   const repoNames = [
     'Justice-GPT',
-    'Smart-Home',
+    'Crop-disease-detection',
     'Smart-Resume-Builder-with-AI-Suggestions',
-    'Battle-Ship-Blitz'
+    'Smart-Home'
   ];
   const showcase = document.querySelector('.project-showcase');
   if (showcase) {
+    // Show loading state
+    showcase.innerHTML = '<p style="text-align: center; padding: 2rem;">Loading projects...</p>';
+    
     Promise.all(
       repoNames.map(name =>
         fetch(`https://api.github.com/repos/Sathvik257/${name}`)
-          .then(res => res.ok ? res.json() : null)
+          .then(res => {
+            if (!res.ok) {
+              console.error(`Failed to fetch ${name}: ${res.status} ${res.statusText}`);
+              return null;
+            }
+            return res.json();
+          })
+          .catch(err => {
+            console.error(`Error fetching ${name}:`, err);
+            return null;
+          })
       )
     ).then(repos => {
       showcase.innerHTML = '';
-      repos.forEach(repo => {
-        if (repo) {
-          const card = document.createElement('div');
-          card.className = 'project-card';
-          card.style.cursor = 'pointer';
-          card.innerHTML = `
-            <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" aria-label="View ${repo.name} on GitHub" tabindex="0" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%">
-              <div class="project-preview">${repo.name}</div>
-              <div class="project-info">
-                <h3>${repo.name}</h3>
-                <p>${repo.description ? repo.description : 'No description provided.'}</p>
-                <div class="project-tech">
-                  <span class="tech-tag">${repo.language ? repo.language : 'N/A'}</span>
-                </div>
+      const validRepos = repos.filter(repo => repo !== null);
+      
+      if (validRepos.length === 0) {
+        showcase.innerHTML = '<p style="text-align: center; padding: 2rem; color: #ef4444;">Unable to load projects. Please check your internet connection or try again later.</p>';
+        return;
+      }
+      
+      validRepos.forEach(repo => {
+        const card = document.createElement('div');
+        card.className = 'project-card';
+        card.style.cursor = 'pointer';
+        card.innerHTML = `
+          <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" aria-label="View ${repo.name} on GitHub" tabindex="0" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%">
+            <div class="project-preview">${repo.name}</div>
+            <div class="project-info">
+              <h3>${repo.name}</h3>
+              <p>${repo.description ? repo.description : 'No description provided.'}</p>
+              <div class="project-tech">
+                <span class="tech-tag">${repo.language ? repo.language : 'N/A'}</span>
               </div>
-            </a>
-          `;
-          showcase.appendChild(card);
-        }
+            </div>
+          </a>
+        `;
+        showcase.appendChild(card);
       });
+    }).catch(err => {
+      console.error('Error loading projects:', err);
+      showcase.innerHTML = '<p style="text-align: center; padding: 2rem; color: #ef4444;">Error loading projects. Please refresh the page.</p>';
     });
   }
 });
