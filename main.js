@@ -1,507 +1,420 @@
-emailjs.init("CrMDL6KSAiH4rynzm");
+const EMAIL = "polisettysathvik@gmail.com";
 
-async function sendContactFormBackend(form) {
-  const status = document.getElementById("form-status");
-  status.textContent = "Sending...";
-  status.style.color = "#2563eb";
-  const formData = new FormData(form);
-  const data = Object.fromEntries(formData.entries());
-  try {
-    const res = await fetch("http://localhost:3001/api/contact", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(data),
-    });
-    if (res.ok) {
-      status.textContent = "Message sent successfully!";
-      status.style.color = "green";
-    } else {
-      throw new Error("Backend error");
-    }
-  } catch (err) {
-    // fallback to EmailJS
-    emailjs.sendForm("service_m02m5u2", "template_k35mz24", form)
-      .then(function () {
-        status.textContent = "Message sent successfully! (via EmailJS)";
-        status.style.color = "green";
-      }, function (error) {
-        status.textContent = "Failed to send. Try again.";
-        status.style.color = "red";
-        console.error(error);
-      });
+const projects = [
+  {
+    name: "Mini-CRM",
+    label: "AI commerce ops",
+    categories: ["ai", "product"],
+    language: "TypeScript",
+    status: "Live app",
+    focus: "Customer intelligence",
+    url: "https://github.com/Sathvik257/Mini-CRM",
+    live: "https://mini-crm-weld-seven.vercel.app/",
+    description: "AI-native CRM for DTC brands with shopper segmentation, personalized campaigns, simulated delivery callbacks, and campaign performance tracking.",
+    icon: "fa-bullhorn",
+    visualClass: "visual-crm",
+    tech: ["TypeScript", "AI workflows", "Campaigns", "Analytics"]
+  },
+  {
+    name: "AI Anti-Cheating System",
+    label: "Exam intelligence",
+    categories: ["ai", "product"],
+    language: "TypeScript",
+    status: "Live app",
+    focus: "Trust and monitoring",
+    url: "https://github.com/Sathvik257/AI-Anti-Cheating-System",
+    live: "https://ai-anti-cheating-system.vercel.app",
+    description: "Full-stack exam platform that monitors online tests with TensorFlow.js face and object detection, audio checks, browser restrictions, MongoDB records, and admin review.",
+    icon: "fa-shield-halved",
+    visualClass: "visual-proctor",
+    tech: ["TypeScript", "TensorFlow.js", "MongoDB", "AI risk"]
+  },
+  {
+    name: "Smart Resume Builder",
+    label: "AI resume tooling",
+    categories: ["ai", "product"],
+    language: "JavaScript",
+    status: "Live app",
+    focus: "Career tooling",
+    url: "https://github.com/Sathvik257/Smart-Resume-Builder-with-AI-Suggestions",
+    live: "https://smart-resume-builder-with-ai-sugges-nu.vercel.app",
+    description: "Client-side AI resume generator with content suggestions, multiple templates, live preview, and professional PDF downloads.",
+    icon: "fa-file-pen",
+    visualClass: "visual-resume",
+    tech: ["JavaScript", "AI suggestions", "PDF export", "Responsive UI"]
+  },
+  {
+    name: "Drug-Induced Autoimmune Detection",
+    label: "Health ML",
+    categories: ["ai", "product"],
+    language: "TypeScript",
+    status: "Live app",
+    focus: "Health prediction",
+    url: "https://github.com/Sathvik257/DRUG-INDUCED-AUTOIMMUNE-DETECTION",
+    live: "https://drug-induced-autoimmune-detection.vercel.app",
+    description: "Machine learning system that detects possible autoimmune reactions caused by drug exposure to support earlier diagnosis and safer treatment decisions.",
+    icon: "fa-prescription-bottle-medical",
+    visualClass: "visual-drug",
+    tech: ["TypeScript", "Machine Learning", "Healthcare", "Prediction"]
+  },
+  {
+    name: "Smart Grievance Management",
+    label: "Serverless platform",
+    categories: ["ai", "cloud", "product"],
+    language: "JavaScript",
+    status: "AWS build",
+    focus: "Civic workflow",
+    url: "https://github.com/Sathvik257/Smart-Grievance-System-Main",
+    description: "AI-powered platform for complaint registration, tracking, and management with serverless AWS infrastructure.",
+    icon: "fa-diagram-project",
+    visualClass: "visual-grievance",
+    tech: ["React.js", "Node.js", "AWS Lambda", "DynamoDB", "Cognito", "S3"]
+  },
+  {
+    name: "Justice GPT",
+    label: "Legal AI",
+    categories: ["ai"],
+    language: "TypeScript",
+    status: "Research build",
+    focus: "Legal reasoning",
+    url: "https://github.com/Sathvik257/Justice-GPT",
+    description: "AI-powered legal advisor that analyzes crime descriptions and suggests relevant IPC sections with natural language reasoning.",
+    icon: "fa-scale-balanced",
+    visualClass: "visual-justice",
+    tech: ["TypeScript", "React.js", "Gemini API", "Prompt engineering"]
+  },
+  {
+    name: "Crop Disease Detection",
+    label: "Agri vision",
+    categories: ["ai", "product"],
+    language: "TypeScript",
+    status: "Live app",
+    focus: "Agri-tech",
+    url: "https://github.com/Sathvik257/Crop-disease-detection",
+    live: "https://website-update-n8tv.bolt.host/",
+    description: "AI web app for detecting crop diseases from leaf images with disease details, treatment guidance, and prevention tips.",
+    icon: "fa-seedling",
+    visualClass: "visual-crop",
+    tech: ["TypeScript", "Computer Vision", "Image analysis", "Agri-tech"]
+  },
+  {
+    name: "Smart Home Automation",
+    label: "Voice automation",
+    categories: ["automation"],
+    language: "Python",
+    status: "Prototype",
+    focus: "Home control",
+    url: "https://github.com/Sathvik257/Smart-Home",
+    description: "Voice-controlled smart home system with real-time device monitoring and room-aware automation concepts.",
+    icon: "fa-house",
+    visualClass: "visual-home",
+    tech: ["Python", "Voice control", "Automation", "Realtime monitoring"]
   }
-  form.reset();
+];
+
+let activeProjectIndex = 0;
+let activeFilter = "all";
+
+function setLoadingState() {
+  const overlay = document.getElementById("loading-overlay");
+  if (!overlay) return;
+  window.setTimeout(() => overlay.classList.add("hide"), 320);
 }
 
-document.getElementById("contact-form").addEventListener("submit", function (e) {
-  e.preventDefault();
-  sendContactFormBackend(this);
-});
+function setupNavigation() {
+  const toggle = document.getElementById("hamburger");
+  const navLinks = document.getElementById("nav-links");
+  if (!toggle || !navLinks) return;
 
-// Interactive Skill Assessment
-document.addEventListener('DOMContentLoaded', function() {
-  const skillOptions = document.querySelectorAll('.skill-option');
-  let score = 0;
-  let totalQuestions = 0;
-
-  skillOptions.forEach(option => {
-    if (option.dataset.correct) totalQuestions++;
-    
-    option.addEventListener('click', function() {
-      const question = this.closest('.skill-question');
-      const options = question.querySelectorAll('.skill-option');
-      
-      // Remove previous selections
-      options.forEach(opt => opt.classList.remove('selected'));
-      
-      // Select current option
-      this.classList.add('selected');
-      
-      // Show feedback
-      if (this.dataset.correct === 'true') {
-        this.style.background = 'rgba(34, 197, 94, 0.3)';
-        this.style.borderColor = '#22c55e';
-        score++;
-      } else {
-        this.style.background = 'rgba(239, 68, 68, 0.3)';
-        this.style.borderColor = '#ef4444';
-      }
-      
-      // Show score after all questions
-      setTimeout(() => {
-        const answeredQuestions = document.querySelectorAll('.skill-option.selected').length;
-        if (answeredQuestions === totalQuestions) {
-          const percentage = Math.round((score / totalQuestions) * 100);
-          const feedback = document.createElement('div');
-          feedback.innerHTML = `
-            <div style="background: rgba(255,255,255,0.2); padding: 1rem; border-radius: 10px; margin-top: 1rem; text-align: center;">
-              <h4>Assessment Complete!</h4>
-              <p>Your Score: ${score}/${totalQuestions} (${percentage}%)</p>
-              <p>${percentage >= 80 ? 'Excellent! You demonstrate strong problem-solving skills.' : 
-                  percentage >= 60 ? 'Good! You show solid understanding of professional practices.' : 
-                  'Keep learning! Focus on improving your problem-solving approach.'}</p>
-            </div>
-          `;
-          document.querySelector('.skill-assessment').appendChild(feedback);
-        }
-      }, 1000);
-    });
-  });
-});
-
-// Live Coding Demo Interaction
-document.addEventListener('DOMContentLoaded', function() {
-  const codeDemo = document.querySelector('.code-demo');
-  if (codeDemo) {
-    codeDemo.addEventListener('click', function() {
-      const algorithms = [
-        {
-          name: 'Quick Sort',
-          code: [
-            'function quickSort(arr) {',
-            '  if (arr.length <= 1) return arr;',
-            '  const pivot = arr[Math.floor(arr.length / 2)];',
-            '  return [...quickSort(arr.filter(x => x < pivot)),',
-            '          pivot, ...quickSort(arr.filter(x => x > pivot))];',
-            '}'
-          ]
-        },
-        {
-          name: 'Binary Search',
-          code: [
-            'function binarySearch(arr, target) {',
-            '  let left = 0, right = arr.length - 1;',
-            '  while (left <= right) {',
-            '    const mid = Math.floor((left + right) / 2);',
-            '    if (arr[mid] === target) return mid;',
-            '    if (arr[mid] < target) left = mid + 1;',
-            '    else right = mid - 1;',
-            '  }',
-            '  return -1;',
-            '}'
-          ]
-        },
-        {
-          name: 'Bubble Sort',
-          code: [
-            'function bubbleSort(arr) {',
-            '  for (let i = 0; i < arr.length; i++) {',
-            '    for (let j = 0; j < arr.length - i - 1; j++) {',
-            '      if (arr[j] > arr[j + 1]) {',
-            '        [arr[j], arr[j + 1]] = [arr[j + 1], arr[j]];',
-            '      }',
-            '    }',
-            '  }',
-            '  return arr;',
-            '}'
-          ]
-        }
-      ];
-      
-      const currentAlgorithm = algorithms[Math.floor(Math.random() * algorithms.length)];
-      const codeLines = this.querySelectorAll('.code-line');
-      
-      // Clear existing code
-      codeLines.forEach((line, index) => {
-        if (index < currentAlgorithm.code.length) {
-          line.textContent = currentAlgorithm.code[index];
-          line.style.opacity = '0';
-          setTimeout(() => {
-            line.style.opacity = '1';
-          }, index * 200);
-        } else {
-          line.style.opacity = '0';
-        }
-      });
-      
-      // Update description
-      const description = this.nextElementSibling;
-      description.innerHTML = `<strong>Now showing: ${currentAlgorithm.name}</strong>`;
-    });
-  }
-});
-
-// Project Preview Interaction
-document.addEventListener('DOMContentLoaded', function() {
-  const projectCards = document.querySelectorAll('.project-card');
-  
-  projectCards.forEach(card => {
-    card.addEventListener('click', function() {
-      const preview = this.querySelector('.project-preview');
-      const projectName = preview.textContent;
-      
-      // Create modal for project details
-      const modal = document.createElement('div');
-      modal.style.cssText = `
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0,0,0,0.8);
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        z-index: 10000;
-        cursor: pointer;
-      `;
-      
-      const modalContent = document.createElement('div');
-      modalContent.style.cssText = `
-        background: white;
-        padding: 2rem;
-        border-radius: 15px;
-        max-width: 600px;
-        margin: 1rem;
-        cursor: default;
-      `;
-      
-      modalContent.innerHTML = `
-        <h3>${projectName}</h3>
-        <p><strong>Status:</strong> ✅ Completed</p>
-        <p><strong>GitHub:</strong> <a href="https://github.com/Sathvik257" target="_blank">View Code</a></p>
-        <p><strong>Demo:</strong> Available upon request</p>
-        <p><strong>Technologies:</strong> ${this.querySelector('.project-tech').innerHTML}</p>
-        <button onclick="this.closest('.modal').remove()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: #667eea; color: white; border: none; border-radius: 5px; cursor: pointer;">Close</button>
-      `;
-      
-      modal.appendChild(modalContent);
-      modal.classList.add('modal');
-      document.body.appendChild(modal);
-      
-      modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-          modal.remove();
-        }
-      });
-    });
-  });
-});
-
-// Achievement Badge Interactions
-document.addEventListener('DOMContentLoaded', function() {
-  const badges = document.querySelectorAll('.badge');
-  
-  badges.forEach(badge => {
-    badge.addEventListener('click', function() {
-      const tooltip = this.getAttribute('data-tooltip');
-      
-      // Create achievement popup
-      const popup = document.createElement('div');
-      popup.style.cssText = `
-        position: fixed;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        background: linear-gradient(135deg, #667eea, #764ba2);
-        color: white;
-        padding: 2rem;
-        border-radius: 15px;
-        text-align: center;
-        z-index: 10000;
-        box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-      `;
-      
-      popup.innerHTML = `
-        <div style="font-size: 3rem; margin-bottom: 1rem;">${this.textContent}</div>
-        <h3>Achievement Unlocked!</h3>
-        <p>${tooltip}</p>
-        <button onclick="this.parentElement.remove()" style="margin-top: 1rem; padding: 0.5rem 1rem; background: rgba(255,255,255,0.2); color: white; border: 1px solid white; border-radius: 5px; cursor: pointer;">Close</button>
-      `;
-      
-      document.body.appendChild(popup);
-      
-      setTimeout(() => {
-        popup.remove();
-      }, 5000);
-    });
-  });
-});
-
-// Loading Animation
-window.addEventListener('DOMContentLoaded', () => {
-  setTimeout(() => {
-    document.getElementById('loading-overlay').classList.add('hide');
-  }, 900);
-
-  // Scroll Reveal
-  const revealEls = document.querySelectorAll('.reveal, .card, .testimonial-card, section');
-  const revealOnScroll = () => {
-    const trigger = window.innerHeight * 0.92;
-    revealEls.forEach(el => {
-      const rect = el.getBoundingClientRect();
-      if (rect.top < trigger) {
-        el.classList.add('visible');
-      }
-    });
+  const closeMenu = () => {
+    navLinks.classList.remove("active");
+    toggle.setAttribute("aria-expanded", "false");
+    document.body.classList.remove("menu-open");
   };
-  window.addEventListener('scroll', revealOnScroll);
-  revealOnScroll();
 
-  // Hamburger Menu
-  const hamburger = document.getElementById('hamburger');
-  const navLinks = document.getElementById('nav-links');
-  hamburger.addEventListener('click', () => {
-    navLinks.classList.toggle('active');
-  });
-  document.querySelectorAll('.nav-links a').forEach(link => {
-    link.addEventListener('click', () => navLinks.classList.remove('active'));
+  toggle.addEventListener("click", () => {
+    const isOpen = navLinks.classList.toggle("active");
+    toggle.setAttribute("aria-expanded", String(isOpen));
+    document.body.classList.toggle("menu-open", isOpen);
   });
 
-  // Center About, top-align others on nav click and highlight
-  document.querySelectorAll('.nav-links a[href^="#"]').forEach(link => {
-    link.addEventListener('click', function(e) {
-      const href = this.getAttribute('href');
-      if (href.startsWith('#')) {
-        const target = document.querySelector(href);
-        if (target) {
-          e.preventDefault();
-          let scrollY;
-          if (href === '#about') {
-            // Center About section
-            const rect = target.getBoundingClientRect();
-            scrollY = window.scrollY + rect.top - (window.innerHeight / 2) + (rect.height / 2);
-          } else {
-            // Top-align other sections (account for sticky header height)
-            const header = document.querySelector('header');
-            const headerHeight = header ? header.offsetHeight : 0;
-            const rect = target.getBoundingClientRect();
-            scrollY = window.scrollY + rect.top - headerHeight - 10;
-          }
-          window.scrollTo({ top: scrollY, behavior: 'smooth' });
-          // Close mobile nav
-          document.getElementById('nav-links').classList.remove('active');
-          // Highlight the section
-          target.classList.add('section-highlight');
-          setTimeout(() => target.classList.remove('section-highlight'), 1200);
-        }
-      }
+  navLinks.querySelectorAll("a").forEach((link) => {
+    link.addEventListener("click", closeMenu);
+  });
+
+  const sections = [...document.querySelectorAll("main section[id]")];
+  const sectionMap = new Map(sections.map((section) => [section.id, section]));
+  const navAnchors = [...navLinks.querySelectorAll('a[href^="#"]')];
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (!entry.isIntersecting) return;
+      navAnchors.forEach((anchor) => anchor.classList.remove("active"));
+      const active = navAnchors.find((anchor) => sectionMap.get(anchor.getAttribute("href").slice(1)) === entry.target);
+      if (active) active.classList.add("active");
     });
-  });
+  }, { rootMargin: "-30% 0px -58% 0px", threshold: 0.1 });
 
-  // Animated Counters
-  function animateCounters() {
-    document.querySelectorAll('.counter').forEach(counter => {
-      const update = () => {
-        const target = +counter.getAttribute('data-target');
-        const current = +counter.innerText;
-        const increment = Math.ceil(target / 60);
-        if (current < target) {
-          counter.innerText = Math.min(current + increment, target);
-          setTimeout(update, 18);
-        } else {
-          counter.innerText = target;
-        }
-      };
-      // Only animate if visible
-      const rect = counter.getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.92) update();
-    });
-  }
-  let countersAnimated = false;
-  window.addEventListener('scroll', () => {
-    if (!countersAnimated && document.querySelector('.counters')) {
-      const rect = document.querySelector('.counters').getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.92) {
-        animateCounters();
-        countersAnimated = true;
-      }
-    }
-  });
-  // Animate on load if already visible
-  if (document.querySelector('.counters')) {
-    const rect = document.querySelector('.counters').getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.92) {
-      animateCounters();
-      countersAnimated = true;
-    }
-  }
+  sections.forEach((section) => observer.observe(section));
+}
 
-  // Animate Skill Progress Bars and Icons
-  function animateSkillBars() {
-    document.querySelectorAll('.skill-bar').forEach(barWrap => {
-      const bar = barWrap.querySelector('.bar-fill');
-      const icon = barWrap.querySelector('.skill-icon');
-      const width = bar.getAttribute('data-width');
-      bar.style.width = width;
-      if (icon) {
-        icon.classList.add('animated');
-      }
-    });
-  }
-  let barsAnimated = false;
-  window.addEventListener('scroll', () => {
-    if (!barsAnimated && document.querySelector('.skills-bars')) {
-      const rect = document.querySelector('.skills-bars').getBoundingClientRect();
-      if (rect.top < window.innerHeight * 0.92) {
-        animateSkillBars();
-        barsAnimated = true;
-      }
-    }
-  });
-  // Animate on load if already visible
-  if (document.querySelector('.skills-bars')) {
-    const rect = document.querySelector('.skills-bars').getBoundingClientRect();
-    if (rect.top < window.innerHeight * 0.92) {
-      animateSkillBars();
-      barsAnimated = true;
-    }
+function projectMatchesFilter(project) {
+  return activeFilter === "all" || project.categories.includes(activeFilter);
+}
+
+function projectActions(project) {
+  return `
+    <div class="project-actions">
+      ${project.live ? `<a class="text-link" href="${project.live}" target="_blank" rel="noopener">Live demo <i class="fa-solid fa-arrow-up-right-from-square" aria-hidden="true"></i></a>` : ""}
+      <a class="text-link" href="${project.url}" target="_blank" rel="noopener">Code <i class="fa-brands fa-github" aria-hidden="true"></i></a>
+    </div>
+  `;
+}
+
+function renderSpotlight() {
+  const spotlight = document.getElementById("project-spotlight");
+  if (!spotlight) return;
+
+  const project = projects[activeProjectIndex];
+  spotlight.innerHTML = `
+    <div class="spotlight-visual ${project.visualClass}">
+      <div class="spotlight-screen">
+        <div class="screen-toolbar">
+          <span></span><span></span><span></span>
+        </div>
+        <div class="screen-line wide"></div>
+        <div class="screen-line"></div>
+        <div class="screen-line short"></div>
+        <div class="screen-pulse">
+          <i class="fa-solid ${project.icon}" aria-hidden="true"></i>
+        </div>
+      </div>
+    </div>
+    <div class="spotlight-copy">
+      <span class="lab-kicker">Spotlight build</span>
+      <h3>${project.name}</h3>
+      <p>${project.description}</p>
+      <div class="spotlight-stats" aria-label="${project.name} metadata">
+        <span>${project.status}</span>
+        <span>${project.language}</span>
+        <span>${project.focus}</span>
+      </div>
+      <div class="project-meta">
+        ${project.tech.map((tech) => `<span class="tech-tag">${tech}</span>`).join("")}
+      </div>
+      ${projectActions(project)}
+    </div>
+  `;
+}
+
+function renderProjects() {
+  const showcase = document.querySelector(".project-showcase");
+  if (!showcase) return;
+
+  const visibleProjects = projects
+    .map((project, index) => ({ project, index }))
+    .filter(({ project }) => projectMatchesFilter(project));
+
+  if (!visibleProjects.some(({ index }) => index === activeProjectIndex)) {
+    activeProjectIndex = visibleProjects[0]?.index ?? 0;
   }
 
-  // List of specific repos to display (using exact names from GitHub)
-  const repoNames = [
-    'Justice-GPT',
-    'Crop-disease-detection',
-    'Smart-Resume-Builder-with-AI-Suggestions',
-    'Smart-Home'
-  ];
-  
-  // Fallback project data in case API fails
-  const fallbackProjects = [
-    {
-      name: 'Justice-GPT',
-      html_url: 'https://github.com/Sathvik257/Justice-GPT',
-      description: 'AI-powered legal advisor that analyzes crime descriptions and suggests relevant IPC sections. Provides instant legal insights using natural language input and intelligent reasoning.',
-      language: 'TypeScript'
-    },
-    {
-      name: 'Crop-disease-detection',
-      html_url: 'https://github.com/Sathvik257/Crop-disease-detection',
-      description: 'AI-powered web app for detecting crop diseases from leaf images. Provides disease details, treatments, and prevention tips to help farmers protect their crops.',
-      language: 'TypeScript'
-    },
-    {
-      name: 'Smart-Resume-Builder-with-AI-Suggestions',
-      html_url: 'https://github.com/Sathvik257/Smart-Resume-Builder-with-AI-Suggestions',
-      description: 'AI Resume Builder — A beautiful, intelligent resume generator that uses AI to suggest content, supports multiple templates, and lets users preview and download professional resumes as PDFs.',
-      language: 'JavaScript'
-    },
-    {
-      name: 'Smart-Home',
-      html_url: 'https://github.com/Sathvik257/Smart-Home',
-      description: 'Smart home system offers voice-controlled automation with real-time device monitoring. Uses 3D spatial awareness for intelligent, room-specific control and interaction.',
-      language: 'Python'
-    }
-  ];
-  
-  const showcase = document.querySelector('.project-showcase');
-  if (showcase) {
-    // Function to create project card
-    const createProjectCard = (repo) => {
-      const card = document.createElement('div');
-      card.className = 'project-card';
-      card.style.cursor = 'pointer';
-      card.innerHTML = `
-        <a href="${repo.html_url}" target="_blank" rel="noopener noreferrer" aria-label="View ${repo.name} on GitHub" tabindex="0" style="text-decoration: none; color: inherit; display: block; height: 100%; width: 100%">
-          <div class="project-preview">${repo.name}</div>
-          <div class="project-info">
-            <h3>${repo.name}</h3>
-            <p>${repo.description ? repo.description : 'No description provided.'}</p>
-            <div class="project-tech">
-              <span class="tech-tag">${repo.language ? repo.language : 'N/A'}</span>
-            </div>
+  renderSpotlight();
+
+  showcase.innerHTML = visibleProjects.map(({ project, index }) => `
+    <article class="project-card reveal ${index === activeProjectIndex ? "is-active" : ""}" data-category="${project.categories.join(" ")}">
+      <button class="project-select" type="button" data-project-index="${index}" aria-pressed="${index === activeProjectIndex}" aria-label="Spotlight ${project.name}">
+        <div class="project-visual ${project.visualClass}" data-label="${project.label}">
+          <div class="project-icon">
+            <i class="fa-solid ${project.icon}" aria-hidden="true"></i>
           </div>
-        </a>
-      `;
-      return card;
-    };
-    
-    // Try to fetch from GitHub API, fallback to static data
-    const loadProjects = async () => {
-      showcase.innerHTML = '<p style="text-align: center; padding: 2rem;">Loading projects...</p>';
-      let validRepos = [];
-      
-      try {
-        // Try fetching from GitHub API
-        for (let i = 0; i < repoNames.length; i++) {
-          const name = repoNames[i];
-          try {
-            const response = await fetch(`https://api.github.com/repos/Sathvik257/${name}`, {
-              method: 'GET',
-              headers: {
-                'Accept': 'application/vnd.github.v3+json'
-              }
-            });
-            if (response.ok) {
-              const repo = await response.json();
-              validRepos.push(repo);
-              console.log(`✓ Loaded from API: ${name}`);
-            } else {
-              console.warn(`⚠ API failed for ${name}, using fallback`);
-              // Use fallback for this repo
-              const fallback = fallbackProjects.find(p => p.name === name);
-              if (fallback) validRepos.push(fallback);
-            }
-          } catch (error) {
-            console.warn(`⚠ Error fetching ${name}, using fallback:`, error);
-            const fallback = fallbackProjects.find(p => p.name === name);
-            if (fallback) validRepos.push(fallback);
-          }
-          
-          // Small delay between requests
-          if (i < repoNames.length - 1) {
-            await new Promise(resolve => setTimeout(resolve, 100));
-          }
-        }
-      } catch (error) {
-        console.error('Error in fetch loop:', error);
-      }
-      
-      // If no repos loaded from API, use all fallbacks
-      if (validRepos.length === 0) {
-        console.log('Using fallback project data');
-        validRepos = fallbackProjects;
-      }
-      
-      // Display all projects
-      showcase.innerHTML = '';
-      validRepos.forEach(repo => {
-        showcase.appendChild(createProjectCard(repo));
+        </div>
+        <div class="project-body">
+          <span class="project-status">${project.status}</span>
+          <h3>${project.name}</h3>
+          <p>${project.description}</p>
+          <div class="project-meta">
+            ${project.tech.slice(0, 3).map((tech) => `<span class="tech-tag">${tech}</span>`).join("")}
+          </div>
+        </div>
+      </button>
+      ${projectActions(project)}
+    </article>
+  `).join("");
+}
+
+function setupProjectMotion() {
+  const cards = document.querySelectorAll(".project-card");
+  if (!cards.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+  cards.forEach((card) => {
+    card.addEventListener("pointermove", (event) => {
+      const rect = card.getBoundingClientRect();
+      const x = (event.clientX - rect.left) / rect.width - 0.5;
+      const y = (event.clientY - rect.top) / rect.height - 0.5;
+      card.style.setProperty("--rx", `${(-y * 5).toFixed(2)}deg`);
+      card.style.setProperty("--ry", `${(x * 5).toFixed(2)}deg`);
+    });
+
+    card.addEventListener("pointerleave", () => {
+      card.style.removeProperty("--rx");
+      card.style.removeProperty("--ry");
+    });
+  });
+}
+
+function setupProjectLab() {
+  const filters = document.querySelectorAll(".filter-btn");
+  const showcase = document.querySelector(".project-showcase");
+  if (!showcase) return;
+
+  filters.forEach((button) => {
+    button.addEventListener("click", () => {
+      activeFilter = button.dataset.filter || "all";
+      filters.forEach((filter) => {
+        const isActive = filter === button;
+        filter.classList.toggle("active", isActive);
+        filter.setAttribute("aria-pressed", String(isActive));
       });
-      
-      console.log(`Displayed ${validRepos.length} projects`);
+      renderProjects();
+      setupProjectMotion();
+      setupRevealAnimations();
+    });
+  });
+
+  showcase.addEventListener("click", (event) => {
+    const selector = event.target.closest("[data-project-index]");
+    if (!selector) return;
+    activeProjectIndex = Number(selector.dataset.projectIndex);
+    renderProjects();
+    setupProjectMotion();
+    setupRevealAnimations();
+  });
+
+  renderProjects();
+}
+
+function setupRevealAnimations() {
+  const revealEls = document.querySelectorAll(".reveal");
+  if (!revealEls.length) return;
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add("visible");
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.14 });
+
+  revealEls.forEach((element) => observer.observe(element));
+}
+
+function setupCounters() {
+  const counters = document.querySelectorAll("[data-count]");
+  if (!counters.length) return;
+
+  const animateCounter = (element) => {
+    const target = Number(element.dataset.count);
+    const duration = 780;
+    const start = performance.now();
+
+    const update = (time) => {
+      const progress = Math.min((time - start) / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      element.textContent = Math.round(target * eased);
+      if (progress < 1) requestAnimationFrame(update);
     };
-    
-    loadProjects();
+
+    requestAnimationFrame(update);
+  };
+
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry) => {
+      if (entry.isIntersecting) {
+        animateCounter(entry.target);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.6 });
+
+  counters.forEach((counter) => observer.observe(counter));
+}
+
+function setupContactForm() {
+  const form = document.getElementById("contact-form");
+  const status = document.getElementById("form-status");
+  if (!form || !status) return;
+
+  if (window.emailjs?.init) {
+    window.emailjs.init("CrMDL6KSAiH4rynzm");
   }
+
+  form.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    status.textContent = "Sending...";
+    status.style.color = "#0f766e";
+
+    const formData = new FormData(form);
+    const payload = Object.fromEntries(formData.entries());
+    const endpoint = window.location.protocol === "file:" ? "http://localhost:3001/api/contact" : "/api/contact";
+
+    try {
+      const response = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
+      });
+
+      if (!response.ok) throw new Error("Contact API failed");
+      status.textContent = "Message sent successfully.";
+      status.style.color = "#0f766e";
+      form.reset();
+    } catch (error) {
+      if (window.emailjs?.sendForm) {
+        try {
+          await window.emailjs.sendForm("service_m02m5u2", "template_k35mz24", form);
+          status.textContent = "Message sent successfully.";
+          status.style.color = "#0f766e";
+          form.reset();
+          return;
+        } catch (emailError) {
+          console.error(emailError);
+        }
+      }
+
+      console.error(error);
+      status.textContent = `Could not send from the page. Please email ${EMAIL}.`;
+      status.style.color = "#b42318";
+    }
+  });
+}
+
+function setupCopyEmail() {
+  const button = document.getElementById("copy-email");
+  if (!button) return;
+
+  button.addEventListener("click", async () => {
+    try {
+      await navigator.clipboard.writeText(EMAIL);
+      button.innerHTML = '<i class="fa-solid fa-check" aria-hidden="true"></i> Copied';
+      window.setTimeout(() => {
+        button.innerHTML = '<i class="fa-regular fa-copy" aria-hidden="true"></i> Copy email';
+      }, 1600);
+    } catch {
+      window.location.href = `mailto:${EMAIL}`;
+    }
+  });
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+  document.getElementById("current-year").textContent = String(new Date().getFullYear());
+  setupProjectLab();
+  setupProjectMotion();
+  setupNavigation();
+  setupRevealAnimations();
+  setupCounters();
+  setupContactForm();
+  setupCopyEmail();
+  setLoadingState();
 });
