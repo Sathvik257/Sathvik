@@ -341,6 +341,14 @@ function setupCounters() {
   counters.forEach((counter) => observer.observe(counter));
 }
 
+function hydrateMetrics() {
+  const projectCounter = document.querySelector("[data-project-count]");
+  if (projectCounter) {
+    projectCounter.dataset.count = String(projects.length);
+    projectCounter.textContent = "0";
+  }
+}
+
 function setupContactForm() {
   const form = document.getElementById("contact-form");
   const status = document.getElementById("form-status");
@@ -409,6 +417,7 @@ function setupCopyEmail() {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("current-year").textContent = String(new Date().getFullYear());
+  hydrateMetrics();
   setupProjectLab();
   setupProjectMotion();
   setupNavigation();

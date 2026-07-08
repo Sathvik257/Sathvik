@@ -4,14 +4,24 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Polisetty Teja Sairama Sathvik | Portfolio</title>
+  <meta name="theme-color" content="#0f766e" />
   <meta name="description" content="Portfolio of Polisetty Teja Sairama Sathvik, a Computer Science student and full-stack developer building AI, cloud, and automation projects." />
   <meta name="keywords" content="Sathvik Polisetty, full-stack developer, React, Node.js, Python, AI, AWS, portfolio" />
   <meta name="author" content="Polisetty Teja Sairama Sathvik" />
+  <meta property="og:title" content="Polisetty Teja Sairama Sathvik | Portfolio" />
+  <meta property="og:description" content="Computer Science student and full-stack developer building AI, cloud, and automation projects." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://sathvik-fa1l.vercel.app/" />
+  <meta name="twitter:card" content="summary" />
+  <meta name="twitter:title" content="Polisetty Teja Sairama Sathvik | Portfolio" />
+  <meta name="twitter:description" content="AI, cloud, and full-stack projects by Sathvik Polisetty." />
+  <link rel="canonical" href="https://sathvik-fa1l.vercel.app/" />
   <link rel="icon" type="image/png" href="favicon.png" />
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
-  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="styles.css?v=20260708" />
 </head>
 <body>
+  <a class="skip-link" href="#main-content">Skip to content</a>
   <div id="loading-overlay" aria-hidden="true">
     <div class="spinner"></div>
   </div>
@@ -26,9 +36,12 @@
           <span></span>
         </button>
         <div class="nav-links" id="nav-links">
+          <a href="#about">About</a>
           <a href="#experience">Experience</a>
           <a href="#projects">Projects</a>
           <a href="#skills">Skills</a>
+          <a href="#education">Education</a>
+          <a href="#certifications">Certs</a>
           <a href="#contact">Contact</a>
           <a class="btn btn-small btn-outline" href="Polisetty-Teja-Sairama-Sathvik-Resume.pdf" download>
             <i class="fa-solid fa-download" aria-hidden="true"></i>
@@ -39,15 +52,15 @@
     </div>
   </header>
 
-  <main>
+  <main id="main-content">
     <section class="hero" id="home" aria-labelledby="hero-title">
       <img class="hero-image" src="sathvik photo.png.jpg" alt="Sathvik Polisetty standing outdoors in a desert landscape" />
       <div class="hero-shade" aria-hidden="true"></div>
       <div class="container hero-content">
         <p class="eyebrow">B.Tech CSE at SRM University AP &middot; CGPA 8.18</p>
-        <h1 id="hero-title">Polisetty Teja Sairama Sathvik</h1>
+        <h1 id="hero-title"><span class="name-line">Polisetty Teja</span> <span class="name-line">Sairama Sathvik</span></h1>
         <p class="hero-lede">
-          Full-stack developer turning GitHub experiments into shipped AI products, cloud-backed systems, and automation tools.
+          Full-stack developer building practical AI products, cloud-backed workflows, and responsive web experiences that move from prototype to usable demo.
         </p>
         <div class="hero-actions" aria-label="Primary actions">
           <a class="btn btn-primary" href="#projects">
@@ -82,7 +95,7 @@
             <span>Internships and research roles</span>
           </div>
           <div class="metric reveal">
-            <strong data-count="8">0</strong>
+            <strong data-count="8" data-project-count>0</strong>
             <span>Best GitHub projects featured</span>
           </div>
           <div class="metric reveal">
@@ -116,6 +129,33 @@
           <span>DynamoDB</span>
           <span>Python</span>
           <span>OpenCV</span>
+        </div>
+      </div>
+    </section>
+
+    <section id="about" class="section about-section">
+      <div class="container about-grid">
+        <div class="about-copy reveal">
+          <span class="section-kicker">About</span>
+          <h2>Building useful software with AI, cloud, and clean web interfaces.</h2>
+          <p>I am a Computer Science student at SRM University AP who likes turning project ideas into working products: AI resume tools, exam monitoring, civic workflows, legal assistants, and automation systems.</p>
+        </div>
+        <div class="about-points" aria-label="Portfolio strengths">
+          <article class="about-point reveal">
+            <i class="fa-solid fa-code-branch" aria-hidden="true"></i>
+            <h3>Product-minded full stack</h3>
+            <p>Builds React and Node.js applications with clear flows, useful data models, and deployable demos.</p>
+          </article>
+          <article class="about-point reveal">
+            <i class="fa-solid fa-brain" aria-hidden="true"></i>
+            <h3>Applied AI focus</h3>
+            <p>Uses Gemini API, TensorFlow.js, prompt engineering, and ML workflows to solve practical problems.</p>
+          </article>
+          <article class="about-point reveal">
+            <i class="fa-solid fa-cloud-arrow-up" aria-hidden="true"></i>
+            <h3>Cloud-ready thinking</h3>
+            <p>Designs serverless features with AWS Lambda, DynamoDB, API Gateway, Cognito, and S3.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -299,11 +339,12 @@
         <a href="https://sathvik-fa1l.vercel.app/" target="_blank" rel="noopener">Portfolio</a>
         <a href="https://github.com/Sathvik257" target="_blank" rel="noopener">GitHub</a>
         <a href="https://www.linkedin.com/in/sathvik-polisetty-6a7101357/" target="_blank" rel="noopener">LinkedIn</a>
+        <a href="Polisetty-Teja-Sairama-Sathvik-Resume.pdf" target="_blank" rel="noopener">Resume</a>
       </div>
     </div>
   </footer>
 
-  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
-  <script src="main.js"></script>
+  <script src="main.js?v=20260708" defer></script>
+  <script src="https://cdn.emailjs.com/dist/email.min.js" async></script>
 </body>
 </html>

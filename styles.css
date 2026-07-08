@@ -50,6 +50,24 @@ body.menu-open {
   overflow: hidden;
 }
 
+.skip-link {
+  position: fixed;
+  top: 12px;
+  left: 12px;
+  z-index: 3000;
+  transform: translateY(-140%);
+  border-radius: var(--radius);
+  background: var(--ink);
+  color: #fff;
+  padding: 10px 14px;
+  font-weight: 900;
+  transition: transform 180ms ease;
+}
+
+.skip-link:focus {
+  transform: translateY(0);
+}
+
 a {
   color: inherit;
   text-decoration: none;
@@ -64,6 +82,11 @@ button,
 input,
 textarea {
   font: inherit;
+}
+
+:focus-visible {
+  outline: 3px solid rgba(217, 95, 67, 0.82);
+  outline-offset: 3px;
 }
 
 .container {
@@ -105,10 +128,11 @@ textarea {
 .nav-links {
   display: flex;
   align-items: center;
-  gap: 22px;
+  gap: 16px;
   color: #30403e;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 700;
+  white-space: nowrap;
 }
 
 .nav-links a:not(.btn) {
@@ -154,6 +178,11 @@ textarea {
   height: 2px;
   background: currentColor;
   transition: transform 180ms ease, opacity 180ms ease;
+}
+
+.nav-toggle::before,
+.nav-toggle::after {
+  content: none;
 }
 
 .nav-toggle[aria-expanded="true"] span:nth-child(1) {
@@ -319,6 +348,11 @@ textarea {
   font-size: clamp(2.65rem, 7vw, 5.6rem);
   line-height: 0.96;
   font-weight: 900;
+  overflow-wrap: break-word;
+}
+
+.hero h1 .name-line {
+  display: block;
 }
 
 .hero-lede {
@@ -426,6 +460,7 @@ textarea {
 .timeline-card,
 .project-card,
 .skill-panel,
+.about-point,
 .education-item,
 .cert-card,
 .contact-form {
@@ -476,6 +511,7 @@ textarea {
 }
 
 .section-heading h2,
+.about-copy h2,
 .education-grid h2,
 .contact-copy h2 {
   margin: 0;
@@ -558,6 +594,52 @@ textarea {
   margin-top: 16px;
   color: var(--teal-dark);
   font-weight: 900;
+}
+
+.about-section {
+  background: var(--paper);
+}
+
+.about-grid {
+  display: grid;
+  grid-template-columns: 0.82fr 1.18fr;
+  gap: 34px;
+  align-items: start;
+}
+
+.about-copy p {
+  margin: 18px 0 0;
+  color: var(--muted);
+  font-size: 1.04rem;
+  font-weight: 700;
+}
+
+.about-points {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.about-point {
+  min-height: 238px;
+  padding: 22px;
+}
+
+.about-point i {
+  color: var(--coral);
+  font-size: 1.7rem;
+}
+
+.about-point h3 {
+  margin: 18px 0 10px;
+  color: var(--ink);
+  font-size: 1.05rem;
+  line-height: 1.28;
+}
+
+.about-point p {
+  margin: 0;
+  color: var(--muted);
 }
 
 .projects-section {
@@ -1274,8 +1356,55 @@ textarea {
 }
 
 @media (max-width: 980px) {
+  .nav {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 44px;
+  }
+
   .nav-toggle {
     display: inline-flex;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 120;
+    justify-self: end;
+    background: var(--teal);
+    border-color: var(--teal);
+    color: #fff;
+    box-shadow: 0 8px 18px rgba(23, 32, 31, 0.08);
+  }
+
+  .nav-toggle::before {
+    content: "";
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    box-shadow: 0 -6px 0 currentColor, 0 6px 0 currentColor;
+    transition: box-shadow 180ms ease, transform 180ms ease;
+  }
+
+  .nav-toggle::after {
+    content: "";
+    position: absolute;
+    width: 20px;
+    height: 2px;
+    background: currentColor;
+    opacity: 0;
+    transition: opacity 180ms ease, transform 180ms ease;
+  }
+
+  .nav-toggle span {
+    display: none;
+  }
+
+  .nav-toggle[aria-expanded="true"]::before {
+    box-shadow: none;
+    transform: rotate(45deg);
+  }
+
+  .nav-toggle[aria-expanded="true"]::after {
+    opacity: 1;
+    transform: rotate(-45deg);
   }
 
   .nav-links {
@@ -1332,6 +1461,7 @@ textarea {
     justify-content: flex-start;
   }
 
+  .about-grid,
   .education-grid,
   .contact-grid {
     grid-template-columns: 1fr;
@@ -1390,6 +1520,10 @@ textarea {
     display: grid;
   }
 
+  .about-points {
+    grid-template-columns: 1fr;
+  }
+
   .spotlight-stats {
     grid-template-columns: 1fr;
   }
@@ -1422,7 +1556,8 @@ textarea {
   }
 
   .hero h1 {
-    font-size: clamp(2.15rem, 12vw, 3.2rem);
+    font-size: 2.35rem;
+    line-height: 1.02;
   }
 
   .hero-actions,
@@ -1457,6 +1592,7 @@ textarea {
   .metric,
   .timeline-card,
   .skill-panel,
+  .about-point,
   .education-item,
   .cert-card,
   .contact-form {
