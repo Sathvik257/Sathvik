@@ -2,113 +2,176 @@ const EMAIL = "polisettysathvik@gmail.com";
 
 const projects = [
   {
-    name: "Mini-CRM",
-    label: "AI commerce ops",
-    categories: ["ai", "product"],
-    language: "TypeScript",
-    status: "Live app",
-    focus: "Customer intelligence",
-    url: "https://github.com/Sathvik257/Mini-CRM",
-    live: "https://mini-crm-weld-seven.vercel.app/",
-    description: "AI-native CRM for DTC brands with shopper segmentation, personalized campaigns, simulated delivery callbacks, and campaign performance tracking.",
-    icon: "fa-bullhorn",
-    visualClass: "visual-crm",
-    tech: ["TypeScript", "AI workflows", "Campaigns", "Analytics"]
+    "name": "Adaptive Defense",
+    "label": "Security research",
+    "categories": [
+      "ai"
+    ],
+    "language": "Python / TypeScript",
+    "status": "Research demo",
+    "focus": "Network anomaly detection",
+    "url": "https://github.com/Sathvik257/Adaptive-Defense",
+    "live": "https://web-flame-eight-75.vercel.app/",
+    "description": "Offline intrusion-detection research combining a benign-trained autoencoder with a DQN threshold controller. Explore recorded synthetic traffic and benchmark comparisons; the demo does not protect live traffic.",
+    "icon": "fa-shield-halved",
+    "visualClass": "visual-proctor",
+    "tech": [
+      "PyTorch",
+      "FastAPI",
+      "React",
+      "scikit-learn"
+    ]
   },
   {
-    name: "AI Anti-Cheating System",
-    label: "Exam intelligence",
-    categories: ["ai", "product"],
-    language: "TypeScript",
-    status: "Live app",
-    focus: "Trust and monitoring",
-    url: "https://github.com/Sathvik257/AI-Anti-Cheating-System",
-    live: "https://ai-anti-cheating-system.vercel.app",
-    description: "Full-stack exam platform that monitors online tests with TensorFlow.js face and object detection, audio checks, browser restrictions, MongoDB records, and admin review.",
-    icon: "fa-shield-halved",
-    visualClass: "visual-proctor",
-    tech: ["TypeScript", "TensorFlow.js", "MongoDB", "AI risk"]
+    "name": "Indic Word & Sentence Prediction",
+    "label": "Multilingual NLP",
+    "categories": [
+      "ai"
+    ],
+    "language": "Python",
+    "status": "Research build",
+    "focus": "Telugu, Hindi and English",
+    "url": "https://github.com/Sathvik257/Next-Word-Predictions",
+    "description": "Next-word prediction and sentence continuation for Telugu, Hindi, and English using LSTM models, a Streamlit interface, and Flower federated-learning scripts. Includes code-mixed text analysis and research comparisons.",
+    "icon": "fa-language",
+    "visualClass": "visual-justice",
+    "tech": [
+      "PyTorch",
+      "LSTM",
+      "Flower",
+      "Streamlit"
+    ]
   },
   {
-    name: "Smart Resume Builder",
-    label: "AI resume tooling",
-    categories: ["ai", "product"],
-    language: "JavaScript",
-    status: "Live app",
-    focus: "Career tooling",
-    url: "https://github.com/Sathvik257/Smart-Resume-Builder-with-AI-Suggestions",
-    live: "https://smart-resume-builder-with-ai-sugges-nu.vercel.app",
-    description: "Client-side AI resume generator with content suggestions, multiple templates, live preview, and professional PDF downloads.",
-    icon: "fa-file-pen",
-    visualClass: "visual-resume",
-    tech: ["JavaScript", "AI suggestions", "PDF export", "Responsive UI"]
+    "name": "Justice GPT",
+    "label": "Legal AI",
+    "categories": [
+      "ai"
+    ],
+    "language": "TypeScript",
+    "status": "Live app",
+    "focus": "Dataset-first legal research",
+    "url": "https://github.com/Sathvik257/Justice-GPT",
+    "live": "https://justice-gpt-87o9.vercel.app/",
+    "description": "Dataset-first Indian legal research app using judgment data and official India Code statutes to explore case scenarios and relevant provisions, with OpenAI as a backup.",
+    "icon": "fa-scale-balanced",
+    "visualClass": "visual-justice",
+    "tech": [
+      "TypeScript",
+      "React.js",
+      "Judgment datasets",
+      "India Code"
+    ]
   },
   {
-    name: "Drug-Induced Autoimmune Detection",
-    label: "Health ML",
-    categories: ["ai", "product"],
-    language: "TypeScript",
-    status: "Live app",
-    focus: "Health prediction",
-    url: "https://github.com/Sathvik257/DRUG-INDUCED-AUTOIMMUNE-DETECTION",
-    live: "https://drug-induced-autoimmune-detection.vercel.app",
-    description: "Machine learning system that detects possible autoimmune reactions caused by drug exposure to support earlier diagnosis and safer treatment decisions.",
-    icon: "fa-prescription-bottle-medical",
-    visualClass: "visual-drug",
-    tech: ["TypeScript", "Machine Learning", "Healthcare", "Prediction"]
+    "name": "Lenny Growth Assistant",
+    "label": "Source-backed research",
+    "categories": [
+      "ai",
+      "product"
+    ],
+    "language": "Python / TypeScript",
+    "status": "Local research studio",
+    "focus": "Cited answers and artifacts",
+    "url": "https://github.com/Sathvik257/lenny-growth-assistant",
+    "description": "Turns podcast transcripts into cited answers, essays, and Markdown or HTML artifacts. Persistent chats and source inspection connect a React interface with FastAPI, PostgreSQL, and local or cloud models.",
+    "icon": "fa-book-open",
+    "visualClass": "visual-resume",
+    "tech": [
+      "React",
+      "FastAPI",
+      "PostgreSQL",
+      "Ollama"
+    ]
   },
   {
-    name: "Smart Grievance Management",
-    label: "Serverless platform",
-    categories: ["ai", "cloud", "product"],
-    language: "JavaScript",
-    status: "AWS build",
-    focus: "Civic workflow",
-    url: "https://github.com/Sathvik257/Smart-Grievance-System-Main",
-    description: "AI-powered platform for complaint registration, tracking, and management with serverless AWS infrastructure.",
-    icon: "fa-diagram-project",
-    visualClass: "visual-grievance",
-    tech: ["React.js", "Node.js", "AWS Lambda", "DynamoDB", "Cognito", "S3"]
+    "name": "Campus Relay",
+    "label": "Growth planning",
+    "categories": [
+      "product",
+      "automation"
+    ],
+    "language": "JavaScript",
+    "status": "Browser-local demo",
+    "focus": "Campaign operations",
+    "url": "https://github.com/Sathvik257/Growth-AI",
+    "live": "https://growthai-iota.vercel.app/",
+    "description": "Campus campaign simulation with student registration, referral attribution, funnel analysis, recovery planning, and CSV export. Uses fictional campaign data stored in the current browser.",
+    "icon": "fa-chart-line",
+    "visualClass": "visual-crm",
+    "tech": [
+      "JavaScript",
+      "localStorage",
+      "Funnel analysis",
+      "CSV export"
+    ]
   },
   {
-    name: "Justice GPT",
-    label: "Legal AI",
-    categories: ["ai"],
-    language: "TypeScript",
-    status: "Research build",
-    focus: "Legal reasoning",
-    url: "https://github.com/Sathvik257/Justice-GPT",
-    description: "AI-powered legal advisor that analyzes crime descriptions and suggests relevant IPC sections with natural language reasoning.",
-    icon: "fa-scale-balanced",
-    visualClass: "visual-justice",
-    tech: ["TypeScript", "React.js", "Gemini API", "Prompt engineering"]
+    "name": "Study Assistant",
+    "label": "Learning tools",
+    "categories": [
+      "ai",
+      "product"
+    ],
+    "language": "JavaScript",
+    "status": "Live app",
+    "focus": "Active recall",
+    "url": "https://github.com/Sathvik257/Study-assistant",
+    "live": "https://study-assistant-9oia.vercel.app/",
+    "description": "Converts notes or topics into flashcards, quizzes, and study missions, with a retest queue for wrong answers. Saves sessions locally and handles slow or invalid AI responses.",
+    "icon": "fa-graduation-cap",
+    "visualClass": "visual-crop",
+    "tech": [
+      "React",
+      "Structured AI",
+      "Flashcards"
+    ]
   },
   {
-    name: "Crop Disease Detection",
-    label: "Agri vision",
-    categories: ["ai", "product"],
-    language: "TypeScript",
-    status: "Live app",
-    focus: "Agri-tech",
-    url: "https://github.com/Sathvik257/Crop-disease-detection",
-    live: "https://website-update-n8tv.bolt.host/",
-    description: "AI web app for detecting crop diseases from leaf images with disease details, treatment guidance, and prevention tips.",
-    icon: "fa-seedling",
-    visualClass: "visual-crop",
-    tech: ["TypeScript", "Computer Vision", "Image analysis", "Agri-tech"]
+    "name": "Email Scheduler",
+    "label": "Campaign automation",
+    "categories": [
+      "automation",
+      "product"
+    ],
+    "language": "TypeScript",
+    "status": "Hosted demo",
+    "focus": "Queued email delivery",
+    "url": "https://github.com/Sathvik257/Email-Scheduler",
+    "live": "https://reachinbox-frontend-19kg.onrender.com",
+    "description": "Schedules email campaigns with Google login, recipient CSV uploads, PostgreSQL persistence, Redis/BullMQ queues, rate limiting, and Ethereal SMTP previews.",
+    "icon": "fa-envelope",
+    "visualClass": "visual-crm",
+    "tech": [
+      "PostgreSQL",
+      "Redis",
+      "BullMQ",
+      "Google OAuth"
+    ]
   },
   {
-    name: "Smart Home Automation",
-    label: "Voice automation",
-    categories: ["automation"],
-    language: "Python",
-    status: "Prototype",
-    focus: "Home control",
-    url: "https://github.com/Sathvik257/Smart-Home",
-    description: "Voice-controlled smart home system with real-time device monitoring and room-aware automation concepts.",
-    icon: "fa-house",
-    visualClass: "visual-home",
-    tech: ["Python", "Voice control", "Automation", "Realtime monitoring"]
+    "name": "Smart Grievance Management",
+    "label": "Serverless platform",
+    "categories": [
+      "ai",
+      "cloud",
+      "product"
+    ],
+    "language": "JavaScript",
+    "status": "AWS build",
+    "focus": "Civic workflow",
+    "url": "https://github.com/Sathvik257/Smart-Grievance-System-Main",
+    "description": "AI-powered platform for complaint registration, tracking, and management with serverless AWS infrastructure.",
+    "icon": "fa-diagram-project",
+    "visualClass": "visual-grievance",
+    "tech": [
+      "React.js",
+      "Node.js",
+      "AWS Lambda",
+      "DynamoDB",
+      "Cognito",
+      "S3"
+    ]
   }
 ];
 
