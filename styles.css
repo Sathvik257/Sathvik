@@ -10,7 +10,7 @@
   --gold: #b98223;
   --sky: #297b9b;
   --shadow: 0 18px 55px rgba(18, 32, 31, 0.14);
-  --radius: 8px;
+  --radius: 16px;
   --header-height: 76px;
 }
 
@@ -248,31 +248,6 @@ textarea {
   font-size: 0.9rem;
 }
 
-#loading-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 2000;
-  display: grid;
-  place-items: center;
-  background: var(--paper);
-  transition: opacity 280ms ease, visibility 280ms ease;
-}
-
-#loading-overlay.hide {
-  opacity: 0;
-  visibility: hidden;
-  pointer-events: none;
-}
-
-.spinner {
-  width: 42px;
-  height: 42px;
-  border: 4px solid #dce7e3;
-  border-top-color: var(--teal);
-  border-radius: 50%;
-  animation: spin 800ms linear infinite;
-}
-
 .hero {
   position: relative;
   min-height: clamp(560px, calc(100svh - 128px), 760px);
@@ -481,12 +456,7 @@ textarea {
   line-height: 1;
 }
 
-.metric strong::after {
-  content: "+";
-  margin-left: 2px;
-  color: var(--coral);
-  font-size: 0.52em;
-}
+
 
 .metric span {
   display: block;
@@ -870,13 +840,13 @@ textarea {
   margin-top: 0;
 }
 
-.project-lab .tech-tag {
+.project-spotlight .tech-tag {
   border-color: rgba(255, 255, 255, 0.18);
   background: rgba(255, 255, 255, 0.1);
   color: #eafffb;
 }
 
-.project-lab .text-link {
+.project-spotlight .text-link {
   color: #bff2e8;
 }
 
@@ -966,50 +936,42 @@ textarea {
 
 .visual-crm {
   background:
-    linear-gradient(120deg, rgba(13, 77, 72, 0.95), rgba(36, 129, 104, 0.82)),
-    url("images/ai-resume-maker.jpg") center/cover;
+    linear-gradient(120deg, rgba(13, 77, 72, 0.95), rgba(36, 129, 104, 0.82));
 }
 
 .visual-proctor {
   background:
-    linear-gradient(120deg, rgba(87, 42, 41, 0.96), rgba(217, 95, 67, 0.78)),
-    url("images/battleship-game.jpg") center/cover;
+    linear-gradient(120deg, rgba(87, 42, 41, 0.96), rgba(217, 95, 67, 0.78));
 }
 
 .visual-resume {
   background:
-    linear-gradient(120deg, rgba(35, 75, 94, 0.96), rgba(41, 123, 155, 0.76)),
-    url("images/ai-resume-maker.jpg") center/cover;
+    linear-gradient(120deg, rgba(35, 75, 94, 0.96), rgba(41, 123, 155, 0.76));
 }
 
 .visual-drug {
   background:
-    linear-gradient(120deg, rgba(44, 75, 54, 0.96), rgba(92, 129, 77, 0.76)),
-    url("images/movie-ticket-booking.jpg") center/cover;
+    linear-gradient(120deg, rgba(44, 75, 54, 0.96), rgba(92, 129, 77, 0.76));
 }
 
 .visual-justice {
   background:
-    linear-gradient(120deg, rgba(13, 77, 72, 0.95), rgba(29, 112, 99, 0.82)),
-    url("images/ai-resume-maker.jpg") center/cover;
+    linear-gradient(120deg, rgba(13, 77, 72, 0.95), rgba(29, 112, 99, 0.82));
 }
 
 .visual-crop {
   background:
-    linear-gradient(120deg, rgba(37, 93, 43, 0.94), rgba(74, 139, 67, 0.76)),
-    url("images/smart-home-automation.jpg") center/cover;
+    linear-gradient(120deg, rgba(37, 93, 43, 0.94), rgba(74, 139, 67, 0.76));
 }
 
 .visual-home {
   background:
-    linear-gradient(120deg, rgba(27, 97, 121, 0.94), rgba(57, 137, 153, 0.68)),
-    url("images/smart-home-automation.jpg") center/cover;
+    linear-gradient(120deg, rgba(27, 97, 121, 0.94), rgba(57, 137, 153, 0.68));
 }
 
 .visual-grievance {
   background:
-    linear-gradient(120deg, rgba(77, 56, 28, 0.94), rgba(185, 130, 35, 0.78)),
-    url("images/movie-ticket-booking.jpg") center/cover;
+    linear-gradient(120deg, rgba(77, 56, 28, 0.94), rgba(185, 130, 35, 0.78));
 }
 
 .project-icon {
@@ -1253,16 +1215,7 @@ textarea {
   color: #fff;
 }
 
-.reveal {
-  opacity: 0;
-  transform: translateY(22px);
-  transition: opacity 520ms ease, transform 520ms ease;
-}
-
-.reveal.visible {
-  opacity: 1;
-  transform: translateY(0);
-}
+.reveal { opacity: 1; }
 
 @keyframes spin {
   to {
@@ -1632,3 +1585,41 @@ textarea {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Motion emphasizes interaction and keeps reading surfaces calm. */
+.motion-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 16px; }
+.motion-controls span { font-size: .78rem; text-transform: uppercase; letter-spacing: .12em; color: #aee7dd; }
+#motion-toggle { min-height: 44px; border: 1px solid #65716f; border-radius: 999px; padding: 6px 16px; color: #fff; background: transparent; cursor: pointer; font-size: .8rem; }
+#motion-toggle:disabled { cursor: default; color: #aee7dd; }
+.hero-image { animation: heroImageDrift 1400ms cubic-bezier(.22,1,.36,1) both; }
+.hero-content > * { animation-timing-function: cubic-bezier(.22,1,.36,1); }
+.hero-signal span, .tech-tag { border-radius: 999px; }
+.project-icon, .project-icon::before, .project-icon::after { animation-play-state: paused !important; }
+.project-card:hover .project-icon, .project-card:hover .project-icon::after,
+.project-card:focus-within .project-icon, .project-card:focus-within .project-icon::after { animation-play-state: running !important; }
+.project-lab::before { animation: none; }
+.marquee:hover .marquee-track { animation-play-state: paused; }
+.project-card { transition: transform 280ms cubic-bezier(.22,1,.36,1), box-shadow 280ms ease, border-color 280ms ease; }
+.text-link i, .btn i { transition: transform 220ms ease; }
+.text-link:hover i, .btn:hover i { transform: translateX(3px); }
+.skill-panel { transition: border-color 220ms ease, transform 220ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .skill-panel:hover { transform: translateY(-4px); border-color: var(--teal); }
+}
+@supports (animation-timeline: scroll()) {
+  .reading-progress { position: absolute; bottom: -1px; left: 0; width: 100%; height: 2px; background: var(--coral); transform-origin: left; animation: readingProgress linear both; animation-timeline: scroll(root); }
+}
+@keyframes readingProgress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+.motion-paused *, .motion-paused *::before, .motion-paused *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+.motion-paused .project-card, .motion-paused .skill-panel, .motion-paused .btn, .motion-paused .filter-btn { transform: none !important; }
+@media (prefers-reduced-motion: reduce) {
+  .hero-content > *, .hero-image, .project-card, .skill-panel, .btn, .filter-btn { transform: none !important; }
+  .reading-progress { display: none; }
+}
+
+@media (max-width: 980px) {
+  .nav-links { visibility: hidden; pointer-events: none; transition: transform 220ms ease, visibility 220ms; }
+  .nav-links.active { visibility: visible; pointer-events: auto; }
+}
+.cert-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 540px) { .cert-grid { grid-template-columns: 1fr; } }

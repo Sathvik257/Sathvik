@@ -178,10 +178,27 @@ const projects = [
 let activeProjectIndex = 0;
 let activeFilter = "all";
 
-function setLoadingState() {
-  const overlay = document.getElementById("loading-overlay");
-  if (!overlay) return;
-  window.setTimeout(() => overlay.classList.add("hide"), 320);
+const motionPreference = window.matchMedia("(prefers-reduced-motion: reduce)");
+function motionDisabled() {
+  return motionPreference.matches || document.body.classList.contains("motion-paused");
+}
+
+function setupMotionControl() {
+  const button = document.getElementById("motion-toggle");
+  if (!button) return;
+  const sync = () => {
+    const paused = motionDisabled();
+    button.disabled = motionPreference.matches;
+    button.setAttribute("aria-pressed", String(paused));
+    button.textContent = motionPreference.matches ? "Reduced motion enabled" : paused ? "Resume motion" : "Pause motion";
+    if (paused) document.getAnimations().forEach(animation => animation.cancel());
+  };
+  button.addEventListener("click", () => {
+    document.body.classList.toggle("motion-paused");
+    sync();
+  });
+  motionPreference.addEventListener("change", sync);
+  sync();
 }
 
 function setupNavigation() {
@@ -268,6 +285,10 @@ function renderSpotlight() {
       ${projectActions(project)}
     </div>
   `;
+  if (!motionDisabled() && spotlight.animate) {
+    spotlight.getAnimations().forEach(animation => animation.cancel());
+    spotlight.animate([{ opacity: 0.35, transform: "translateY(8px)" }, { opacity: 1, transform: "translateY(0)" }], { duration: 320, easing: "cubic-bezier(.22,1,.36,1)" });
+  }
 }
 
 function renderProjects() {
@@ -308,10 +329,11 @@ function renderProjects() {
 
 function setupProjectMotion() {
   const cards = document.querySelectorAll(".project-card");
-  if (!cards.length || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  if (!cards.length || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
 
   cards.forEach((card) => {
     card.addEventListener("pointermove", (event) => {
+      if (motionDisabled()) return;
       const rect = card.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width - 0.5;
       const y = (event.clientY - rect.top) / rect.height - 0.5;
@@ -348,29 +370,38 @@ function setupProjectLab() {
   showcase.addEventListener("click", (event) => {
     const selector = event.target.closest("[data-project-index]");
     if (!selector) return;
-    activeProjectIndex = Number(selector.dataset.projectIndex);
-    renderProjects();
-    setupProjectMotion();
-    setupRevealAnimations();
+    const nextIndex = Number(selector.dataset.projectIndex);
+    if (nextIndex === activeProjectIndex) return;
+    activeProjectIndex = nextIndex;
+    showcase.querySelectorAll("[data-project-index]").forEach(button => {
+      const selected = Number(button.dataset.projectIndex) === activeProjectIndex;
+      button.setAttribute("aria-pressed", String(selected));
+      button.closest(".project-card").classList.toggle("is-active", selected);
+    });
+    renderSpotlight();
   });
 
   renderProjects();
 }
 
+let revealObserver;
 function setupRevealAnimations() {
-  const revealEls = document.querySelectorAll(".reveal");
-  if (!revealEls.length) return;
-
-  const observer = new IntersectionObserver((entries) => {
-    entries.forEach((entry) => {
-      if (entry.isIntersecting) {
-        entry.target.classList.add("visible");
-        observer.unobserve(entry.target);
-      }
+  const elements = document.querySelectorAll(".reveal:not([data-reveal-ready])");
+  if (!("IntersectionObserver" in window)) return;
+  if (!revealObserver) revealObserver = new IntersectionObserver(entries => {
+    entries.filter(entry => entry.isIntersecting).forEach((entry, index) => {
+      revealObserver.unobserve(entry.target);
+      if (motionDisabled() || !entry.target.animate) return;
+      entry.target.animate([
+        { opacity: 0, transform: "translateY(18px)" },
+        { opacity: 1, transform: "translateY(0)" }
+      ], { duration: 560, delay: Math.min(index * 65, 195), easing: "cubic-bezier(.22,1,.36,1)", fill: "backwards" });
     });
-  }, { threshold: 0.14 });
-
-  revealEls.forEach((element) => observer.observe(element));
+  }, { threshold: 0.08 });
+  elements.forEach(element => {
+    element.dataset.revealReady = "true";
+    revealObserver.observe(element);
+  });
 }
 
 function setupCounters() {
@@ -379,6 +410,7 @@ function setupCounters() {
 
   const animateCounter = (element) => {
     const target = Number(element.dataset.count);
+    if (motionDisabled()) { element.textContent = String(target); return; }
     const duration = 780;
     const start = performance.now();
 
@@ -408,7 +440,7 @@ function hydrateMetrics() {
   const projectCounter = document.querySelector("[data-project-count]");
   if (projectCounter) {
     projectCounter.dataset.count = String(projects.length);
-    projectCounter.textContent = "0";
+    projectCounter.textContent = String(projects.length);
   }
 }
 
@@ -480,6 +512,7 @@ function setupCopyEmail() {
 
 document.addEventListener("DOMContentLoaded", () => {
   document.getElementById("current-year").textContent = String(new Date().getFullYear());
+  setupMotionControl();
   hydrateMetrics();
   setupProjectLab();
   setupProjectMotion();
@@ -488,5 +521,5 @@ document.addEventListener("DOMContentLoaded", () => {
   setupCounters();
   setupContactForm();
   setupCopyEmail();
-  setLoadingState();
+
 });
