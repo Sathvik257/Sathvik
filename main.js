@@ -191,7 +191,9 @@ function setupMotionControl() {
     button.disabled = motionPreference.matches;
     button.setAttribute("aria-pressed", String(paused));
     button.textContent = motionPreference.matches ? "Reduced motion enabled" : paused ? "Resume motion" : "Pause motion";
-    if (paused) document.getAnimations().forEach(animation => animation.cancel());
+    if (paused) document.getAnimations().forEach(animation => {
+      if (!animation.animationName) animation.cancel();
+    });
   };
   button.addEventListener("click", () => {
     document.body.classList.toggle("motion-paused");
@@ -258,17 +260,10 @@ function renderSpotlight() {
   const project = projects[activeProjectIndex];
   spotlight.innerHTML = `
     <div class="spotlight-visual ${project.visualClass}">
-      <div class="spotlight-screen">
-        <div class="screen-toolbar">
-          <span></span><span></span><span></span>
-        </div>
-        <div class="screen-line wide"></div>
-        <div class="screen-line"></div>
-        <div class="screen-line short"></div>
-        <div class="screen-pulse">
-          <i class="fa-solid ${project.icon}" aria-hidden="true"></i>
-        </div>
-      </div>
+      <span class="visual-index">PROJECT / ${String(activeProjectIndex + 1).padStart(2, "0")}</span>
+      <span class="emblem-ring" aria-hidden="true"></span>
+      <div class="project-emblem" aria-hidden="true"><i class="fa-solid ${project.icon}"></i></div>
+      <div class="visual-caption"><span>${project.label}</span><span>EXPLORE THE BUILD &nearr;</span></div>
     </div>
     <div class="spotlight-copy">
       <span class="lab-kicker">Spotlight build</span>
@@ -327,26 +322,6 @@ function renderProjects() {
   `).join("");
 }
 
-function setupProjectMotion() {
-  const cards = document.querySelectorAll(".project-card");
-  if (!cards.length || !window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
-
-  cards.forEach((card) => {
-    card.addEventListener("pointermove", (event) => {
-      if (motionDisabled()) return;
-      const rect = card.getBoundingClientRect();
-      const x = (event.clientX - rect.left) / rect.width - 0.5;
-      const y = (event.clientY - rect.top) / rect.height - 0.5;
-      card.style.setProperty("--rx", `${(-y * 5).toFixed(2)}deg`);
-      card.style.setProperty("--ry", `${(x * 5).toFixed(2)}deg`);
-    });
-
-    card.addEventListener("pointerleave", () => {
-      card.style.removeProperty("--rx");
-      card.style.removeProperty("--ry");
-    });
-  });
-}
 
 function setupProjectLab() {
   const filters = document.querySelectorAll(".filter-btn");
@@ -361,9 +336,13 @@ function setupProjectLab() {
         filter.classList.toggle("active", isActive);
         filter.setAttribute("aria-pressed", String(isActive));
       });
-      renderProjects();
-      setupProjectMotion();
-      setupRevealAnimations();
+      const update = () => {
+        renderProjects();
+        setupRevealAnimations();
+      };
+      if (document.startViewTransition && !motionDisabled()) {
+        document.startViewTransition(update).finished.catch(() => {});
+      } else update();
     });
   });
 
@@ -448,48 +427,13 @@ function setupContactForm() {
   const form = document.getElementById("contact-form");
   const status = document.getElementById("form-status");
   if (!form || !status) return;
-
-  if (window.emailjs?.init) {
-    window.emailjs.init("CrMDL6KSAiH4rynzm");
-  }
-
-  form.addEventListener("submit", async (event) => {
+  form.addEventListener("submit", event => {
     event.preventDefault();
-    status.textContent = "Sending...";
-    status.style.color = "#0f766e";
-
-    const formData = new FormData(form);
-    const payload = Object.fromEntries(formData.entries());
-    const endpoint = window.location.protocol === "file:" ? "http://localhost:3001/api/contact" : "/api/contact";
-
-    try {
-      const response = await fetch(endpoint, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(payload)
-      });
-
-      if (!response.ok) throw new Error("Contact API failed");
-      status.textContent = "Message sent successfully.";
-      status.style.color = "#0f766e";
-      form.reset();
-    } catch (error) {
-      if (window.emailjs?.sendForm) {
-        try {
-          await window.emailjs.sendForm("service_m02m5u2", "template_k35mz24", form);
-          status.textContent = "Message sent successfully.";
-          status.style.color = "#0f766e";
-          form.reset();
-          return;
-        } catch (emailError) {
-          console.error(emailError);
-        }
-      }
-
-      console.error(error);
-      status.textContent = `Could not send from the page. Please email ${EMAIL}.`;
-      status.style.color = "#b42318";
-    }
+    const values = new FormData(form);
+    const subject = `Portfolio enquiry from ${values.get("name")}`;
+    const body = `${values.get("message")}\n\nFrom: ${values.get("name")}\nReply to: ${values.get("email")}`;
+    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+    status.textContent = "Your email draft is ready in your mail app. You can also use the Email me link.";
   });
 }
 
@@ -515,11 +459,77 @@ document.addEventListener("DOMContentLoaded", () => {
   setupMotionControl();
   hydrateMetrics();
   setupProjectLab();
-  setupProjectMotion();
   setupNavigation();
   setupRevealAnimations();
   setupCounters();
   setupContactForm();
   setupCopyEmail();
+  setupCommandMenu();
+  setupOrbitalScene();
 
 });
+
+function setupCommandMenu() {
+  const dialog = document.getElementById("command-menu");
+  const input = document.getElementById("command-input");
+  const results = document.getElementById("command-results");
+  const trigger = document.getElementById("search-trigger");
+  let previousFocus;
+  const destinations = [
+    ...projects.map((project, index) => ({ title: project.name, detail: project.label, index, href: "#projects" })),
+    ...["About", "Experience", "Skills", "Education", "Certifications", "Contact"].map(title => ({ title, detail: "Section", href: `#${title.toLowerCase()}` }))
+  ];
+  const render = () => {
+    const query = input.value.trim().toLowerCase();
+    const matches = destinations.filter(item => `${item.title} ${item.detail}`.toLowerCase().includes(query));
+    results.replaceChildren();
+    for (const item of matches) {
+      const link = document.createElement("a");
+      link.href = item.href;
+      const title = document.createElement("span"); title.textContent = item.title;
+      const detail = document.createElement("small"); detail.textContent = item.detail;
+      link.append(title, detail);
+      link.addEventListener("click", () => {
+        if (item.index !== undefined) {
+          activeFilter = "all"; activeProjectIndex = item.index;
+          document.querySelectorAll(".filter-btn").forEach(button => {
+            const active = button.dataset.filter === "all";
+            button.classList.toggle("active", active); button.setAttribute("aria-pressed", String(active));
+          });
+          renderProjects(); setupRevealAnimations();
+        }
+        previousFocus = null;
+        dialog.close();
+        document.getElementById("nav-links").classList.remove("active");
+        document.getElementById("hamburger").setAttribute("aria-expanded", "false");
+        document.body.classList.remove("menu-open");
+        const target = document.querySelector(item.href);
+        target.setAttribute("tabindex", "-1");
+        target.focus({ preventScroll: true });
+        target.scrollIntoView({ behavior: motionDisabled() ? "instant" : "smooth" });
+      });
+      results.append(link);
+    }
+    if (!matches.length) {
+      const empty = document.createElement("p"); empty.textContent = "No matches. Try AI, skills, or contact."; results.append(empty);
+    }
+  };
+  const open = () => { if (dialog.open) return; previousFocus = document.activeElement; input.value = ""; render(); dialog.showModal(); input.focus(); };
+  trigger.addEventListener("click", open);
+  document.getElementById("command-close").addEventListener("click", () => dialog.close());
+  dialog.addEventListener("close", () => previousFocus?.focus());
+  dialog.addEventListener("click", event => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
+  dialog.addEventListener("keydown", event => { if (event.key === "Escape") { event.preventDefault(); dialog.close(); } });
+  input.addEventListener("input", render);
+  input.addEventListener("keydown", event => { if (event.key === "ArrowDown") { event.preventDefault(); results.querySelector("a")?.focus(); } if (event.key === "Enter") { event.preventDefault(); results.querySelector("a")?.click(); } });
+  document.addEventListener("keydown", event => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); open(); } });
+}
+
+function setupOrbitalScene() {
+  const scene = document.querySelector(".orbital-scene");
+  if (!scene || !("IntersectionObserver" in window)) return;
+  let visible = true;
+  const sync = () => scene.classList.toggle("scene-paused", !visible || document.hidden);
+  new IntersectionObserver(entries => { visible = entries[0].isIntersecting; sync(); }).observe(scene);
+  document.addEventListener("visibilitychange", sync);
+}
