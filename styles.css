@@ -1700,3 +1700,7 @@ dialog::backdrop {
 .orbit-core { box-shadow: inset -12px -18px 28px #94714c15, 0 18px 40px #94714c12; }
 .status-dot, .orbit::before { box-shadow: none; }
 .project-card, .skill-panel { box-shadow: 0 4px 18px #59412404; }
+
+.contact-form .btn:disabled { opacity: .65; cursor: wait; transform: none; }
+#form-status[data-state="error"] { color: #983b2b; }
+#form-status[data-state="success"] { color: #3f653c; }

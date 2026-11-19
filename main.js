@@ -427,13 +427,59 @@ function setupContactForm() {
   const form = document.getElementById("contact-form");
   const status = document.getElementById("form-status");
   if (!form || !status) return;
-  form.addEventListener("submit", event => {
+  const button = form.querySelector('[type="submit"]');
+  let sending = false;
+  form.addEventListener("submit", async event => {
     event.preventDefault();
+    if (sending || !form.reportValidity()) return;
     const values = new FormData(form);
-    const subject = `Portfolio enquiry from ${values.get("name")}`;
-    const body = `${values.get("message")}\n\nFrom: ${values.get("name")}\nReply to: ${values.get("email")}`;
-    window.location.href = `mailto:${EMAIL}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-    status.textContent = "Your email draft is ready in your mail app. You can also use the Email me link.";
+    const name = String(values.get("name") || "").trim();
+    const email = String(values.get("email") || "").trim();
+    const message = String(values.get("message") || "").trim();
+    if (!name || !email || !message) {
+      status.textContent = "Please fill in your name, email, and message.";
+      status.dataset.state = "error";
+      return;
+    }
+    sending = true;
+    button.disabled = true;
+    form.setAttribute("aria-busy", "true");
+    status.dataset.state = "sending";
+    status.textContent = "Sending your message…";
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 20000);
+    try {
+      // EmailJS public identifiers are intended for browser use. No private key belongs here.
+      const response = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({
+          service_id: "service_m02m5u2",
+          template_id: "template_k35mz24",
+          user_id: "CrMDL6KSAiH4rynzm",
+          template_params: {
+            name, from_name: name, email, from_email: email, reply_to: email,
+            message, to_email: EMAIL, to_name: "Sathvik",
+            subject: `Portfolio enquiry from ${name}`
+          }
+        })
+      });
+      if (!response.ok) throw new Error(`Email delivery failed (${response.status})`);
+      status.dataset.state = "success";
+      status.textContent = "Your message has been sent. Thank you for getting in touch!";
+      form.reset();
+    } catch (error) {
+      status.dataset.state = "error";
+      status.textContent = error.name === "AbortError"
+        ? "Delivery could not be confirmed. Your message is still here; please email me directly before retrying."
+        : `Your message could not be sent. Please try again or email ${EMAIL} directly. Your message is still here.`;
+    } finally {
+      clearTimeout(timeout);
+      sending = false;
+      button.disabled = false;
+      form.removeAttribute("aria-busy");
+    }
   });
 }
 
