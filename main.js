@@ -186,6 +186,9 @@ function motionDisabled() {
 function setupMotionControl() {
   const button = document.getElementById("motion-toggle");
   if (!button) return;
+  try {
+    document.body.classList.toggle("motion-paused", localStorage.getItem("portfolio-motion") === "paused");
+  } catch { /* Storage may be unavailable in private or restricted browsers. */ }
   const sync = () => {
     const paused = motionDisabled();
     button.disabled = motionPreference.matches;
@@ -197,6 +200,7 @@ function setupMotionControl() {
   };
   button.addEventListener("click", () => {
     document.body.classList.toggle("motion-paused");
+    try { localStorage.setItem("portfolio-motion", document.body.classList.contains("motion-paused") ? "paused" : "enabled"); } catch {}
     sync();
   });
   motionPreference.addEventListener("change", sync);
@@ -211,14 +215,26 @@ function setupNavigation() {
   const closeMenu = () => {
     navLinks.classList.remove("active");
     toggle.setAttribute("aria-expanded", "false");
+    toggle.setAttribute("aria-label", "Open menu");
     document.body.classList.remove("menu-open");
   };
 
   toggle.addEventListener("click", () => {
     const isOpen = navLinks.classList.toggle("active");
     toggle.setAttribute("aria-expanded", String(isOpen));
+    toggle.setAttribute("aria-label", isOpen ? "Close menu" : "Open menu");
     document.body.classList.toggle("menu-open", isOpen);
   });
+
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && navLinks.classList.contains("active") && !document.querySelector("dialog[open]")) {
+      closeMenu(); toggle.focus();
+    }
+  });
+  document.addEventListener("click", event => {
+    if (!navLinks.contains(event.target) && !toggle.contains(event.target)) closeMenu();
+  });
+  window.matchMedia("(min-width: 761px)").addEventListener("change", event => { if (event.matches) closeMenu(); });
 
   navLinks.querySelectorAll("a").forEach((link) => {
     link.addEventListener("click", closeMenu);
@@ -428,6 +444,13 @@ function setupContactForm() {
   const status = document.getElementById("form-status");
   if (!form || !status) return;
   const button = form.querySelector('[type="submit"]');
+  const fields = [...form.querySelectorAll("input:not([type=hidden]), textarea")];
+  const messageField = form.querySelector("textarea");
+  const counter = document.getElementById("message-count");
+  const updateCount = () => { if (counter) counter.textContent = `${messageField.value.length.toLocaleString()} / 5,000`; };
+  messageField.addEventListener("input", updateCount);
+  updateCount();
+  const buttonContent = button.innerHTML;
   let sending = false;
   form.addEventListener("submit", async event => {
     event.preventDefault();
@@ -436,13 +459,15 @@ function setupContactForm() {
     const name = String(values.get("name") || "").trim();
     const email = String(values.get("email") || "").trim();
     const message = String(values.get("message") || "").trim();
-    if (!name || !email || !message) {
-      status.textContent = "Please fill in your name, email, and message.";
+    if (!name || !email || !message || name.length > 100 || email.length > 254 || message.length > 5000) {
+      status.textContent = "Please enter your name (up to 100 characters), email, and a message of up to 5,000 characters.";
       status.dataset.state = "error";
       return;
     }
     sending = true;
     button.disabled = true;
+    button.textContent = "Sending…";
+    fields.forEach(field => { field.readOnly = true; });
     form.setAttribute("aria-busy", "true");
     status.dataset.state = "sending";
     status.textContent = "Sending your message…";
@@ -469,6 +494,7 @@ function setupContactForm() {
       status.dataset.state = "success";
       status.textContent = "Your message has been sent. Thank you for getting in touch!";
       form.reset();
+      updateCount();
     } catch (error) {
       status.dataset.state = "error";
       status.textContent = error.name === "AbortError"
@@ -478,6 +504,8 @@ function setupContactForm() {
       clearTimeout(timeout);
       sending = false;
       button.disabled = false;
+      button.innerHTML = buttonContent;
+      fields.forEach(field => { field.readOnly = false; });
       form.removeAttribute("aria-busy");
     }
   });
@@ -548,6 +576,7 @@ function setupCommandMenu() {
         dialog.close();
         document.getElementById("nav-links").classList.remove("active");
         document.getElementById("hamburger").setAttribute("aria-expanded", "false");
+        document.getElementById("hamburger").setAttribute("aria-label", "Open menu");
         document.body.classList.remove("menu-open");
         const target = document.querySelector(item.href);
         target.setAttribute("tabindex", "-1");
@@ -566,6 +595,16 @@ function setupCommandMenu() {
   dialog.addEventListener("close", () => previousFocus?.focus());
   dialog.addEventListener("click", event => { if (event.target === dialog) { const r = dialog.getBoundingClientRect(); if (event.clientX < r.left || event.clientX > r.right || event.clientY < r.top || event.clientY > r.bottom) dialog.close(); } });
   dialog.addEventListener("keydown", event => { if (event.key === "Escape") { event.preventDefault(); dialog.close(); } });
+  results.addEventListener("keydown", event => {
+    if (!["ArrowDown", "ArrowUp", "Home", "End"].includes(event.key)) return;
+    const links = [...results.querySelectorAll("a")];
+    const index = links.indexOf(document.activeElement);
+    if (index < 0) return;
+    event.preventDefault();
+    if (event.key === "ArrowUp" && index === 0) { input.focus(); return; }
+    const next = event.key === "Home" ? 0 : event.key === "End" ? links.length - 1 : Math.max(0, Math.min(links.length - 1, index + (event.key === "ArrowDown" ? 1 : -1)));
+    links[next]?.focus();
+  });
   input.addEventListener("input", render);
   input.addEventListener("keydown", event => { if (event.key === "ArrowDown") { event.preventDefault(); results.querySelector("a")?.focus(); } if (event.key === "Enter") { event.preventDefault(); results.querySelector("a")?.click(); } });
   document.addEventListener("keydown", event => { if ((event.ctrlKey || event.metaKey) && event.key.toLowerCase() === "k") { event.preventDefault(); open(); } });

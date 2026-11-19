@@ -21,7 +21,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="styles.css?v=20261119-contact2" />
+  <link rel="stylesheet" href="styles.css?v=20261119-final" />
 </head>
 <body>
   <a class="skip-link" href="#main-content">Skip to content</a>
@@ -315,22 +315,24 @@
         <form id="contact-form" class="contact-form">
           <label>
             <span>Name</span>
-            <input type="text" name="name" autocomplete="name" required />
+            <input type="text" name="name" autocomplete="name" maxlength="100" required />
           </label>
           <label>
             <span>Email</span>
-            <input type="email" name="email" autocomplete="email" required />
+            <input type="email" name="email" autocomplete="email" maxlength="254" required />
           </label>
           <input type="hidden" name="to_email" value="polisettysathvik@gmail.com" />
           <label>
             <span>Message</span>
-            <textarea name="message" rows="5" required></textarea>
+            <textarea name="message" rows="5" maxlength="5000" aria-describedby="message-count" required></textarea>
+            <small id="message-count">0 / 5,000</small>
           </label>
           <button class="btn btn-primary" type="submit">
             <i class="fa-solid fa-paper-plane" aria-hidden="true"></i>
             Send message
           </button>
           <p id="form-status" role="status" aria-live="polite">Send a message directly to my inbox.</p>
+          <noscript><p>Please enable JavaScript to send this form, or <a href="mailto:polisettysathvik@gmail.com">email me directly</a>.</p></noscript>
         </form>
       </div>
     </section>
@@ -340,7 +342,7 @@
     <div class="container footer-inner">
       <p>&copy; <span id="current-year">2026</span> Polisetty Teja Sairama Sathvik</p>
       <div class="footer-links" aria-label="Footer links">
-        <a href="https://sathvik-fa1l.vercel.app/" target="_blank" rel="noopener">Portfolio</a>
+        <a href="#home">Back to top ↑</a>
         <a href="https://github.com/Sathvik257" target="_blank" rel="noopener">GitHub</a>
         <a href="https://www.linkedin.com/in/sathvik-polisetty-6a7101357/" target="_blank" rel="noopener">LinkedIn</a>
         <a href="Sathvik-Resume.pdf" target="_blank" rel="noopener">Resume</a>
@@ -351,8 +353,8 @@
   <dialog id="command-menu" aria-labelledby="command-title">
     <div class="command-heading"><h2 id="command-title">Find your next stop.</h2><button type="button" id="command-close" aria-label="Close search">Esc</button></div>
     <label class="command-search"><i class="fa-solid fa-magnifying-glass" aria-hidden="true"></i><input id="command-input" type="search" placeholder="Search projects, skills, contact…" autocomplete="off" aria-label="Search portfolio"></label>
-    <div id="command-results"></div><p class="command-hint">Tab to browse · Enter to open · Esc to close</p>
+    <div id="command-results"></div><p class="command-hint">↑ ↓ to browse · Enter to open · Esc to close</p>
   </dialog>
-  <script src="main.js?v=20261119-contact2" defer></script>
+  <script src="main.js?v=20261119-final" defer></script>
 </body>
 </html>

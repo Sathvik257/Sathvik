@@ -1704,3 +1704,6 @@ dialog::backdrop {
 .contact-form .btn:disabled { opacity: .65; cursor: wait; transform: none; }
 #form-status[data-state="error"] { color: #983b2b; }
 #form-status[data-state="success"] { color: #3f653c; }
+
+#message-count { color: var(--muted); font-size: .7rem; text-align: right; }
+.contact-form [readonly] { opacity: .75; }
